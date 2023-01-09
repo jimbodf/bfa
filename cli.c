@@ -375,7 +375,7 @@ static void create_bfa_file(FT_Face ft_face, FILE *output_file) {
 	vkWaitForFences(vk.device, 1, &vk.fence, VK_TRUE, UINT64_MAX);
 	vkResetFences(vk.device, 1, &vk.fence);
 	
-	const uint32_t final_output_image_size = buffer_copy.bufferOffset;
+	const uint32_t final_output_image_size = output_width * output_height;
 	
 	// ===========================================================================
 	// Now copy the image back to CPU memory for writing to the output file
