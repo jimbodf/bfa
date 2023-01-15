@@ -22,7 +22,7 @@ Look at example.c for reference.
 Overview:
 |Section|Size|
 |-------|----|
-|Header|20 B|
+|Header|24 B|
 |Glyph Map|Variable|
 |Image Data|Variable|
 
@@ -37,7 +37,9 @@ Overview:
 |uint8|11|The font pixel size.|
 |uint16|12|The width of the atlas image.|
 |uint16|14|The height of the atlas image.|
-|uint32|16|The size of the stored image data. This is not always the size of the full image because empty space at the end is truncated.|
+|uint16|16|The largest width of any glyph.|
+|uint16|18|The largest height of any glyph.|
+|uint32|20|The size of the stored image data. This is not always the size of the full image because empty space at the end is truncated.|
 
 As a an example C struct:
 ```
@@ -49,6 +51,8 @@ struct bfa_header {
 	uint8_t font_size;
 	uint16_t atlas_width;
 	uint16_t atlas_height;
+	uint16_t largest_glyph_width;
+	uint16_t largest_glyph_height;
 	uint32_t size_of_stored_image_data;
 };
 ```
@@ -64,9 +68,9 @@ These are 16 byte structures as follows:
 |uint16|2|The Y offset of the glyph in the atlas.|
 |uint16|4|Width.|
 |uint16|6|Height.|
-|uint16|8|X bearing in pixels (X offset for drawing the glyph).|
-|uint16|10|Y bearing in pixels (Y offset for drawing the glyph).|
-|uint16|12|The advance in pixels (how much to move across X to draw the next glyph).|
+|int16|8|X bearing in pixels (X offset for drawing the glyph).|
+|int16|10|Y bearing in pixels (Y offset for drawing the glyph).|
+|int16|12|The advance in pixels (how much to move across X to draw the next glyph).|
 |uint16|14|Flags. If bit 0 is 1, the glyph doesn't have an image and is just a space.|
 
 As an example C struct:
@@ -76,9 +80,9 @@ struct bfa_glyph {
 	uint16_t y;
 	uint16_t w;
 	uint16_t h;
-	uint16_t x_bearing;
-	uint16_t y_bearing;
-	uint16_t advance;
+	int16_t x_bearing;
+	int16_t y_bearing;
+	int16_t advance;
 	uint16_t flags;
 };
 ```
