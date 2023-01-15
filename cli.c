@@ -29,8 +29,8 @@ enum {
 struct bfa_glyph {
 	uint16_t x, y;
 	uint16_t w, h;
-	uint16_t x_bearing, y_bearing;
-	uint16_t advance;
+	int16_t x_bearing, y_bearing;
+	int16_t advance;
 	uint16_t flags;
 };
 
@@ -42,6 +42,8 @@ struct bfa_header {
 	uint8_t font_size;
 	uint16_t atlas_width;
 	uint16_t atlas_height;
+	uint16_t largest_glyph_width;
+	uint16_t largest_glyph_height;
 	// Zeroes at the end of the generated
 	// image get truncated.
 	uint32_t size_of_stored_image_data;
@@ -182,6 +184,8 @@ static void create_bfa_file(FT_Face ft_face, FILE *output_file) {
 	int output_width = 0;
 	int output_height = 0;
 	int row_height = 0;
+	uint16_t largest_glyph_width = 0;
+	uint16_t largest_glyph_height = 0;
 	FT_GlyphSlot glyph_slot = ft_face->glyph;
 	int atlas_row_count = 1;
 	const int char_code_max = map_type == MAP_TYPE_ASCII ? 256 : 16384;
@@ -200,7 +204,10 @@ static void create_bfa_file(FT_Face ft_face, FILE *output_file) {
 		
 		if (glyph_slot->bitmap.rows > row_height) {
 			row_height = glyph_slot->bitmap.rows;
+			largest_glyph_height = row_height;
 		}
+		
+		if (glyph_slot->bitmap.width > largest_glyph_width) largest_glyph_width = glyph_slot->bitmap.width;
 		
 		if (width_accumulator > max_image_width) {
 			width_accumulator = 0;
@@ -408,6 +415,8 @@ static void create_bfa_file(FT_Face ft_face, FILE *output_file) {
 	header.font_size = requested_font_size;
 	header.atlas_width = output_width;
 	header.atlas_height = output_height;
+	header.largest_glyph_width = largest_glyph_width;
+	header.largest_glyph_height = largest_glyph_height;
 	header.size_of_stored_image_data = final_output_image_size;
 	
 	fwrite(&header, sizeof(header), 1, output_file);

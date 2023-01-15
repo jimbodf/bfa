@@ -6,8 +6,8 @@
 struct bfa_glyph {
 	uint16_t x, y;
 	uint16_t w, h;
-	uint16_t x_bearing, y_bearing;
-	uint16_t advance;
+	int16_t x_bearing, y_bearing;
+	int16_t advance;
 	uint16_t flags;
 };
 
@@ -19,6 +19,8 @@ struct bfa_header {
 	uint8_t font_size;
 	uint16_t atlas_width;
 	uint16_t atlas_height;
+	uint16_t largest_glyph_width;
+	uint16_t largest_glyph_height;
 	uint32_t size_of_stored_image_data;
 };
 
